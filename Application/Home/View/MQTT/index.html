@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="__PUBLIC__/bootstrap-3.3.5-dist/css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="__PUBLIC__/bootstrap-3.3.5-dist/css/bootstrap-theme.css" type="text/css" />
+<title>MQTT消息</title>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"> </span>
+            <span class="icon-bar"> </span>
+            <span class="icon-bar"> </span>
+          </button>
+          <!-- <a class="navbar-brand" href="#">Brand</a> -->
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="__CONTROLLER__/index">首页 <span class="sr-only">(current)</span></a></li>
+            <li><a href="__CONTROLLER__/listmesg">消息查询</a></li>
+            <li><a href="__CONTROLLER__/params">参数管理</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="__CONTROLLER__/registeuser">用户注册</a></li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>    
+    <div class="jumbotron">
+    <!-- <div class="well"> -->
+        <div class="container">
+            <h3>MQTT 消息处理<small>通过MQTT broker发送消息，并查看历史消息。这只是个测试系统</small></h3>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-xs-12 text-center">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>查看消息<small><a id="reloadMessageBtn" data-toggle="popover" data-trigger="focus" title="消息刷新" data-content="">刷新</a></small></h4><span class="text-primary" id="refreshTime"> </span>
+                    </div>  
+                </div>
+                <div class="row">
+                    <!-- <div id="messagesList" class="list-group">
+                        
+                    </div> -->                    
+                    <table id="messagesList" class="table table-hover table-striped table-bordered table-condensed">
+                        <tr>
+                            <th>
+                                发送标示
+                            </th>
+                            <th>
+                                发送频道
+                            </th>
+                            <th>
+                                发送内容
+                            </th>
+                            <th>
+                                发送时间
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xs-12 text-center">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>发送消息</h4>
+                    </div>  
+                </div>
+                <form accept-charset="utf-8">
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                        <div class="input-group">
+                            <label for="client_id">使用的客户端标示</label>
+                       </div>  
+                    </div> 
+                    <div class="col-sm-2"> </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">请输入标示</span>
+                            <input id="client_id" type="text" class="form-control" placeholder="Client ID">
+                        </div>  
+                    </div> 
+                    <div class="col-sm-2"> </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                        <div class="input-group">
+                            <label for="topicsInput">要发送的频道</label>
+                       </div>  
+                    </div> 
+                    <div class="col-sm-2"> </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">请选择频道</span>
+                            <input type="text" id="topicsInput" class="form-control" placeholder="Selected Topic here...">                          
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">选择频道<span class="caret"> </span></button>
+                                <ul class="dropdown-menu" id="topicsList">
+                                  
+                                </ul>
+                            </div><!-- /btn-group -->
+                        </div>                      
+                    </div>
+                    <div class="col-sm-2"> </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                        <div class="input-group">
+                            <label for="messagetosend">要发送的消息</label>
+                       </div>  
+                    </div> 
+                    <div class="col-sm-2"> </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">请输入消息</span>
+                            <input type="text" class="form-control" id="messagetosend" placeholder="Input message here to send...">
+                            <span class="input-group-btn">
+                                <button id="sendBtn" type="button" class="btn btn-default">发送消息</button>                                                  
+                            </span>
+                        </div>  
+                    </div> 
+                    <div class="col-sm-2"> </div>
+                </div>
+                </form>
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                         <hr />
+                    </div> 
+                    <div class="col-sm-2"> </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2"> </div>
+                    <div class="col-sm-8 col-xs-12">
+                        <div id="sentmessagesList" class="list-group">
+                            
+                        </div>
+                    </div> 
+                    <div class="col-sm-2"> </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<script src="__PUBLIC__/jquery-2.1.4.js" type="text/javascript"></script>
+<script src="__PUBLIC__/bootstrap-3.3.5-dist/js/bootstrap.js" type="text/javascript"></script>
+<script src="__PUBLIC__/bootbox.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/dateformat.js" type="text/javascript"></script>
+<script src="__PUBLIC__/mqtt.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function(){        
+        //fill topic list here
+        filltopics();
+        
+        //fill message list here
+        fillmessages();
+        
+        //auto refresh messages
+        autorefreshmessagelist = setInterval(function(){fillmessages();}, 15000); 
+        
+        $("#sendBtn").click(function(){
+            if ($.trim($("#topicsInput").val()) == "") {
+                bootbox.alert("请输入或者选择消息要发送的频道。");
+                return false;
+            }
+            if ($.trim($("#messagetosend").val()) == "") {
+                bootbox.alert("请输入要发送的消息。");
+                return false;
+            }
+            if ($.trim($("#client_id").val()) ==""){
+                console.log("will use a random client_id");
+            }
+            timenow = new Date();
+            $.ajax({
+                method: 'POST',
+                url: '__CONTROLLER__/send',
+                data: {
+                       "topic" : $.trim($("#topicsInput").val()),
+                        "message" : $("#messagetosend").val(),
+                        "client_id" : $.trim($("#client_id").val()),
+                        "message_datetime": timenow.Format("yyyy-MM-dd hh:mm:ss")
+                },
+            })
+            .done(function(data){
+                if (DEBUG) {console.log(data);}
+                var dataJSONObj = JSON.parse(data);
+                if (data == null){
+                    bootbox.alert("Nothing Return.");
+                } else {
+                    if (dataJSONObj.isSuccessful){
+                        $("#sentmessagesList").empty();
+                        $("#sentmessagesList").append($("<p>").attr("class","list-group-item text-left").html("Is Successful: "+dataJSONObj.isSuccessful));
+                        $("#sentmessagesList").append($("<p>").attr("class","list-group-item text-left").html("Client ID: "+dataJSONObj.client_id));
+                        $("#sentmessagesList").append($("<p>").attr("class","list-group-item text-left").html("Sent Topic: "+dataJSONObj.topic));
+                        $("#sentmessagesList").append($("<p>").attr("class","list-group-item text-left").html("Sent Message: "+dataJSONObj.message));
+                        $("#sentmessagesList").append($("<p>").attr("class","list-group-item text-left").html("Error Message: "+dataJSONObj.errorMessage));
+                    }else{
+                         bootbox.alert(dataJSONObj.errorMessage);
+                    }
+                }
+            })
+            .fail(function(data){
+                console.log(data);
+                bootbox.alert("系统错误，请稍后再试，或联系管理员。");               
+            }); 
+        });
+                
+        $("#reloadMessageBtn").click(function(){
+            fillmessages();
+        });
+    });
+function fillmessages(isRaw){
+    if (isRaw) {
+        $.ajax({
+           method: 'POST',
+           url: '__CONTROLLER__/rawmessages',
+           data:{},
+            
+        })
+        .done(function(data){
+            if (DEBUG) {console.log(data);}
+            timenow = new Date();
+            var dataJSONObj = JSON.parse(data);
+            if (data == null){
+                bootbox.alert("Nothing Return.");
+            } else {
+                if (dataJSONObj.isSuccessful){
+                    $("#messagesList").empty();
+                    var aTr = $("<tr>");
+                    aTr.append($("<th>").attr("class","text-center").attr("width","50px").html("客户端"))
+                        .append($("<th>").attr("class","text-center").attr("width","50px").html("频道"))
+                        .append($("<th>").attr("class","text-center").attr("width","100px").html("消息"))
+                        .append($("<th>").attr("class","text-center").attr("width","100px").html("时间"));
+                    $("#messagesList").append(aTr);
+                    $.each(dataJSONObj.res, function(index,item){
+                        var messageJSONObj = JSON.parse(item.message);
+                        var aTr = $("<tr>");
+                        aTr.append($("<td>").attr("width","50px").html(messageJSONObj.client_id))
+                            .append($("<td>").attr("width","50px").html(messageJSONObj.topic))
+                            .append($("<td>").attr("width","100px").html(messageJSONObj.message))
+                            .append($("<td>").attr("width","60px").html(messageJSONObj.message_datetime));
+                        $("#messagesList").append(aTr);
+                    });
+                    $("#refreshTime").html(timenow.Format("yyyy-MM-dd hh:mm:ss"));
+                    $("#reloadMessageBtn").popover({"data-content":"刷新成功"});
+                }else{
+                    $("#reloadMessageBtn").attr("data-content",dataJSONObj.errorMessage).popover("show");
+                    // bootbox.alert(dataJSONObj.errorMessage);
+                    // clearInterval(autorefreshmessagelist);
+                }
+            }
+        })
+        .fail(function(data){
+            $("#reloadMessageBtn").attr("data-content","系统错误，请稍后再试，或联系管理员。").popover("show");
+            // bootbox.alert("");
+            clearInterval(autorefreshmessagelist);
+        });
+    } else {
+        $.ajax({
+           method: 'POST',
+           url: '__CONTROLLER__/messages',
+           data:{},
+            
+        })
+        .done(function(data){
+            if (DEBUG) {console.log(data);}
+            timenow = new Date();
+            var dataJSONObj = JSON.parse(data);
+            if (data == null){
+                bootbox.alert("Nothing Return.");
+            } else {
+                if (dataJSONObj.isSuccessful){
+                    $("#messagesList").empty();
+                    var aTr = $("<tr>");
+                    aTr.append($("<th>").attr("class","text-center").attr("width","50px").html("客户端"))
+                        .append($("<th>").attr("class","text-center").attr("width","50px").html("频道"))
+                        .append($("<th>").attr("class","text-center").attr("width","100px").html("消息"))
+                        .append($("<th>").attr("class","text-center").attr("width","100px").html("时间"));
+                    $("#messagesList").append(aTr);
+                    $.each(dataJSONObj.res, function(index,item){
+                        var aTr = $("<tr>");
+                        aTr.append($("<td>").attr("width","50px").html(item.client_id))
+                            .append($("<td>").attr("width","50px").html(item.topic))
+                            .append($("<td>").attr("width","100px").html(item.payload))
+                            .append($("<td>").attr("width","60px").html(item.message_datetime));
+                        $("#messagesList").append(aTr);
+                    });
+                    $("#refreshTime").html(timenow.Format("yyyy-MM-dd hh:mm:ss"));
+                }else{
+                    $("#reloadMessageBtn").attr("data-content",dataJSONObj.errorMessage).popover("show");
+                    // bootbox.alert(dataJSONObj.errorMessage);
+                    // clearInterval(autorefreshmessagelist);
+                }
+            }
+        })
+        .fail(function(data){
+            $("#reloadMessageBtn").attr("data-content","系统错误，请稍后再试，或联系管理员。").popover("show");
+            // bootbox.alert("");
+            clearInterval(autorefreshmessagelist);
+        });        
+    }
+}    
+
+function filltopics(){
+    $.ajax({
+       method: 'POST',
+       url: '__CONTROLLER__/topics',
+       data:{},
+        
+    })
+    .done(function(data){
+        if (DEBUG) {console.log(data);}
+        var dataJSONObj = JSON.parse(data);
+        if (data == null){
+            bootbox.alert("Nothing Return.");
+        } else {
+            if (dataJSONObj.isSuccessful){
+                $("#topicsList").empty();
+                $.each(dataJSONObj.res, function(index,item){
+                    if (DEBUG) {console.log(item.topic);}
+                    $("#topicsList").append($("<li>").html($("<a>").attr("href","javascript:addtoinput('"+item.topic+"',$('#topicsInput'))").html(item.topic)));
+                });
+            }else{
+                bootbox.alert(dataJSONObj.errorMessage);
+            }
+        }
+    })
+    .fail(function(data){
+        bootbox.alert("系统错误，请稍后再试，或联系管理员。");
+    });
+}    
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="__PUBLIC__/bootstrap-3.3.5-dist/css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="__PUBLIC__/bootstrap-3.3.5-dist/css/bootstrap-theme.css" type="text/css" />
+<title>信息发送结果</title>
+</head>
+<body>
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3>信息发送结果</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>{$retData["isSuccessful"]}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>{$retData["client_id"]}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>{$retData["topic"]}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>{$retData["message"]}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>{$retData["errorMessage"]}</p>
+                </div>
+            </div>
+        </div>
+    </div>    
+<script src="__PUBLIC__/jquery-2.1.4.js" type="text/javascript"></script>
+<script src="__PUBLIC__/bootstrap-3.3.5-dist/js/bootstrap.js" type="text/javascript"></script>
+<script src="__PUBLIC__/bootbox.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+</script>
+</body>
+</html>

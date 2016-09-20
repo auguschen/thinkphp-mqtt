@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="__PUBLIC__/bootstrap-3.3.5-dist/css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="__PUBLIC__/bootstrap-3.3.5-dist/css/bootstrap-theme.css" type="text/css" />
+<title>更新网站</title>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>更新网站<small>提交代码到git后，点击按钮实现服务器上代码部署。</small></h1>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <!-- center -->
+                <div class="row">
+                    <div class="col-xs-2">
+                      
+                    </div>
+                    <div class="col-xs-8 text-center">
+                        <button type="button" id="updateBtn" class="btn btn-default">点击更新</button>
+                    </div>
+                    <div class="col-xs-2">
+                      
+                    </div>
+                </div>
+                <div class="row">
+                </div>
+            </div> 
+        </div>
+    </div>
+<script src="__PUBLIC__/jquery-2.1.4.js" type="text/javascript"></script>
+<script src="__PUBLIC__/bootstrap-3.3.5-dist/js/bootstrap.js" type="text/javascript"></script>
+<script src="__PUBLIC__/bootbox.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function(){
+        $("#updateBtn").click(function(){
+            $.ajax({
+                method: "POST",
+                url: "__CONTROLLER__/updateweb"
+            })
+            .done(function(data){
+                console.log(data);
+                if (data != 127) {
+                    bootbox.alert({
+                        size: "small",
+                        message: "POSTED, but Something Error.",
+                        callback: function(){
+                            console.log("Some Error occurs, pls check it.");
+                        }
+                    });
+                } else {                    
+                    bootbox.alert({
+                        size: "small",
+                        message: "Pages Updated!",
+                        callback: function(){
+                            console.log("Updated, and can refresh the page here.");
+                            location.reload();
+                        }
+                    });
+                }
+            })
+            .fail(function(){
+                bootbox.alert({
+                    size: "small",
+                    message: "System Error. POST Failed.",
+                    callback: function(){
+                        console.log("System Error occurs, pls check it.");
+                    }
+                });
+            });
+        });
+    });
+</script>
+</body>
+</html>
